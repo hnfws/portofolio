@@ -26,3 +26,9 @@ dist/
 *.sln
 *.sw?
 *.env
+
+# Object file
+*.o
+
+# Ada Library Information
+*.ali
