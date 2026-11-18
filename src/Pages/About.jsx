@@ -1,10 +1,11 @@
 import React, { useEffect, useState, memo, useMemo } from "react"
-import { FileText, Code, Award, Globe, ArrowUpRight, Sparkles, UserCheck } from "lucide-react"
+import { FileText, Code, Award, Globe, ArrowUpRight, Sparkles, UserCheck, Palette } from "lucide-react"
+import { projectMatchesRole } from "../utils/portfolio"
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 
 // Memoized Components
-const Header = memo(() => (
+const Header = memo(({ role }) => (
   <div className="text-center lg:mb-8 mb-2 px-[5%]">
     <div className="inline-block relative group">
       <h2 
@@ -21,7 +22,9 @@ const Header = memo(() => (
       data-aos-duration="800"
     >
       <Sparkles className="w-5 h-5 text-purple-400" />
-      Transforming ideas into digital experiences
+      {role === "illustrator"
+        ? "Turning imagination into visual stories"
+        : "Transforming ideas into digital experiences"}
       <Sparkles className="w-5 h-5 text-purple-400" />
     </p>
   </div>
@@ -112,7 +115,7 @@ const StatCard = memo(({ icon: Icon, color, value, label, description, animation
   </div>
 ));
 
-const AboutPage = () => {
+const AboutPage = ({ role }) => {
   // Memoized calculations
   const [stats, setStats] = useState({
     totalProjects: 0,
@@ -131,7 +134,9 @@ const AboutPage = () => {
         (today < new Date(today.getFullYear(), startDate.getMonth(), startDate.getDate()) ? 1 : 0);
 
       setStats({
-        totalProjects: storedProjects.length,
+        totalProjects: storedProjects.filter((project) =>
+          projectMatchesRole(project.role, role),
+        ).length,
         totalCertificates: storedCertificates.length,
         YearExperience: experience
       });
@@ -146,7 +151,7 @@ const AboutPage = () => {
       window.removeEventListener('storage', updateStats);
       window.removeEventListener('portfolioDataUpdated', updateStats);
     };
-  }, []);
+  }, [role]);
 
   const { totalProjects, totalCertificates, YearExperience } = stats;
 
@@ -177,11 +182,13 @@ const AboutPage = () => {
   // Memoized stats data
   const statsData = useMemo(() => [
     {
-      icon: Code,
+      icon: role === "illustrator" ? Palette : Code,
       color: "from-[#6366f1] to-[#a855f7]",
       value: totalProjects,
-      label: "Total Projects",
-      description: "Innovative web solutions crafted",
+      label: role === "illustrator" ? "Selected Artwork" : "Total Projects",
+      description: role === "illustrator"
+        ? "Illustration projects in this portfolio"
+        : "Innovative web solutions crafted",
       animation: "fade-right",
     },
     {
@@ -193,14 +200,16 @@ const AboutPage = () => {
       animation: "fade-up",
     },
     {
-      icon: Globe,
+      icon: role === "illustrator" ? Sparkles : Globe,
       color: "from-[#6366f1] to-[#a855f7]",
-      value: YearExperience,
-      label: "Years of Experience",
-      description: "Continuous learning journey",
+      value: role === "illustrator" ? "2D" : YearExperience,
+      label: role === "illustrator" ? "Creative Focus" : "Years of Experience",
+      description: role === "illustrator"
+        ? "Illustration & visual storytelling"
+        : "Continuous learning journey",
       animation: "fade-left",
     },
-  ], [totalProjects, totalCertificates, YearExperience]);
+  ], [totalProjects, totalCertificates, YearExperience, role]);
 
   return (
     <div
@@ -210,7 +219,7 @@ const AboutPage = () => {
   itemType="https://schema.org/Person"
 
     >
-      <Header />
+      <Header role={role} />
 
       <div className="w-full mx-auto pt-8 sm:pt-12 relative">
         <div className="flex flex-col-reverse lg:grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
@@ -229,7 +238,7 @@ const AboutPage = () => {
                 data-aos-duration="1300"
                 itemProp="name"
               >
-                Eki Zulfar Rachman
+                Muhana Fawwas Sausan
               </span>
             </h2>
             
@@ -238,8 +247,9 @@ const AboutPage = () => {
               data-aos="fade-right"
               data-aos-duration="1500"
             >
-        Saya adalah mahasiswa Teknik Informatika yang berfokus pada pengembangan Front-End. 
-Saya berfokus pada penciptaan pengalaman digital yang menarik dan selalu berupaya memberikan solusi terbaik dalam setiap proyek yang saya kerjakan.
+        {role === "illustrator"
+          ? "Saya mengeksplorasi ide melalui ilustrasi digital dan cerita visual, dengan perhatian pada karakter, suasana, dan detail."
+          : "Saya adalah mahasiswa Teknik Informatika yang berfokus pada pengembangan Full-Stack. Saya senang menciptakan pengalaman digital yang menarik dan solusi yang fungsional."}
                   </p>
 
                {/* Quote Section */}
@@ -280,7 +290,10 @@ Saya berfokus pada penciptaan pengalaman digital yang menarik dan selalu berupay
                 data-aos-duration="1000"
                 className="w-full lg:w-auto sm:px-6 py-2 sm:py-3 rounded-lg border border-[#a855f7]/50 text-[#a855f7] font-medium transition-all duration-300 hover:scale-105 flex items-center justify-center lg:justify-start gap-2 hover:bg-[#a855f7]/10 "
               >
-                <Code className="w-4 h-4 sm:w-5 sm:h-5" /> View Projects
+                {role === "illustrator"
+                  ? <Palette className="w-4 h-4 sm:w-5 sm:h-5" />
+                  : <Code className="w-4 h-4 sm:w-5 sm:h-5" />}
+                {role === "illustrator" ? "View Artwork" : "View Projects"}
               </button>
               </a>
             </div>

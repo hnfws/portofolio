@@ -15,7 +15,8 @@ import TechStackIcon from "../components/TechStackIcon";
 import AOS from "aos";
 import "aos/dist/aos.css";
 import Certificate from "../components/Certificate";
-import { Code, Award, Boxes } from "lucide-react";
+import { Code, Award, Boxes, Palette } from "lucide-react";
+import { PORTFOLIO_ROLES, projectMatchesRole } from "../utils/portfolio";
 
 
 const ToggleButton = ({ onClick, isShowingMore }) => (
@@ -118,7 +119,7 @@ const techStacks = [
   { icon: "SweetAlert.svg", language: "SweetAlert2" },
 ];
 
-export default function FullWidthTabs() {
+export default function FullWidthTabs({ role = "developer" }) {
   const theme = useTheme();
   const [value, setValue] = useState(0);
   const [projects, setProjects] = useState([]);
@@ -192,8 +193,19 @@ export default function FullWidthTabs() {
     }
   }, []);
 
-  const displayedProjects = showAllProjects ? projects : projects.slice(0, initialItems);
+  const roleProjects = projects.filter((project) =>
+    projectMatchesRole(project.role, role),
+  );
+  const displayedRoleProjects = showAllProjects
+    ? roleProjects
+    : roleProjects.slice(0, initialItems);
   const displayedCertificates = showAllCertificates ? certificates : certificates.slice(0, initialItems);
+  const portfolioRole = PORTFOLIO_ROLES[role];
+
+  useEffect(() => {
+    setValue(0);
+    setShowAllProjects(false);
+  }, [role]);
 
   // Sisa dari komponen (return statement) tidak ada perubahan
   return (
@@ -208,12 +220,13 @@ export default function FullWidthTabs() {
             backgroundClip: 'text',
             WebkitTextFillColor: 'transparent'
           }}>
-            Portfolio Showcase
+            {role === "illustrator" ? "Illustration Showcase" : "Portfolio Showcase"}
           </span>
         </h2>
         <p className="text-slate-400 max-w-2xl mx-auto text-sm md:text-base mt-2">
-          Explore my journey through projects, certifications, and technical expertise. 
-          Each section represents a milestone in my continuous learning path.
+          {role === "illustrator"
+            ? "Explore selected artwork, certifications, and creative focus."
+            : "Explore my projects, certifications, and technical expertise."}
         </p>
       </div>
 
@@ -287,8 +300,10 @@ export default function FullWidthTabs() {
             }}
           >
             <Tab
-              icon={<Code className="mb-2 w-5 h-5 transition-all duration-300" />}
-              label="Projects"
+              icon={role === "illustrator"
+                ? <Palette className="mb-2 w-5 h-5 transition-all duration-300" />
+                : <Code className="mb-2 w-5 h-5 transition-all duration-300" />}
+              label={role === "illustrator" ? "Artwork" : "Projects"}
               {...a11yProps(0)}
             />
             <Tab
@@ -298,7 +313,7 @@ export default function FullWidthTabs() {
             />
             <Tab
               icon={<Boxes className="mb-2 w-5 h-5 transition-all duration-300" />}
-              label="Tech Stack"
+              label={role === "illustrator" ? "Creative Focus" : "Tech Stack"}
               {...a11yProps(2)}
             />
           </Tabs>
@@ -312,7 +327,7 @@ export default function FullWidthTabs() {
           <TabPanel value={value} index={0} dir={theme.direction}>
             <div className="container mx-auto flex justify-center items-center overflow-hidden">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 2xl:grid-cols-3 gap-5">
-                {displayedProjects.map((project, index) => (
+                {displayedRoleProjects.map((project, index) => (
                   <div
                     key={project.id || index}
                     data-aos={index % 3 === 0 ? "fade-up-right" : index % 3 === 1 ? "fade-up" : "fade-up-left"}
@@ -327,9 +342,16 @@ export default function FullWidthTabs() {
                     />
                   </div>
                 ))}
+                {roleProjects.length === 0 && (
+                  <p className="col-span-full py-10 text-center text-sm text-slate-400">
+                    {role === "illustrator"
+                      ? "No artwork has been added to this portfolio yet."
+                      : "No projects have been added to this portfolio yet."}
+                  </p>
+                )}
               </div>
             </div>
-            {projects.length > initialItems && (
+            {roleProjects.length > initialItems && (
               <div className="mt-6 w-full flex justify-start">
                 <ToggleButton
                   onClick={() => toggleShowMore('projects')}
@@ -365,17 +387,30 @@ export default function FullWidthTabs() {
 
           <TabPanel value={value} index={2} dir={theme.direction}>
             <div className="container mx-auto flex justify-center items-center overflow-hidden pb-[5%]">
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 lg:gap-8 gap-5">
-                {techStacks.map((stack, index) => (
-                  <div
-                    key={index}
-                    data-aos={index % 3 === 0 ? "fade-up-right" : index % 3 === 1 ? "fade-up" : "fade-up-left"}
-                    data-aos-duration={index % 3 === 0 ? "1000" : index % 3 === 1 ? "1200" : "1000"}
-                  >
-                    <TechStackIcon TechStackIcon={stack.icon} Language={stack.language} />
-                  </div>
-                ))}
-              </div>
+              {role === "illustrator" ? (
+                <div className="grid w-full grid-cols-1 gap-4 sm:grid-cols-3">
+                  {portfolioRole.stack.map((focus) => (
+                    <div
+                      key={focus}
+                      className="rounded-2xl border border-white/10 bg-white/5 px-5 py-8 text-center text-sm font-medium text-slate-200"
+                    >
+                      {focus}
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-5 md:grid-cols-3 lg:grid-cols-6 lg:gap-8">
+                  {techStacks.map((stack, index) => (
+                    <div
+                      key={index}
+                      data-aos={index % 3 === 0 ? "fade-up-right" : index % 3 === 1 ? "fade-up" : "fade-up-left"}
+                      data-aos-duration={index % 3 === 0 ? "1000" : index % 3 === 1 ? "1200" : "1000"}
+                    >
+                      <TechStackIcon TechStackIcon={stack.icon} Language={stack.language} />
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           </TabPanel>
         </SwipeableViews>

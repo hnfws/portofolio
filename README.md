@@ -2,7 +2,7 @@
 
 Hello everyone\! 👋
 
-Let me introduce myself, I'm **Eki Zulfar Rachman**. On this occasion, I'd like to share the portfolio website project that I've developed. built with React and Supabase, featuring a public-facing site and an admin dashboard.
+Let me introduce myself, I'm **Muhana Fawwas Sausan**. On this occasion, I'd like to share the portfolio website project that I've developed. built with React and Supabase, featuring a public-facing site and an admin dashboard.
 
 **Live Demo:** [https://ekizr.com](https://ekizr.com)
 
@@ -257,11 +257,21 @@ WHERE NOT EXISTS (
 );
 ```
 
-### 5. Enable Realtime (Comments)
+### 5. Dual portfolio roles and experience history
+
+After running the database setup above, run
+[`supabase/migrations/20260615000000_dual_portfolio_roles_and_experiences.sql`](./supabase/migrations/20260615000000_dual_portfolio_roles_and_experiences.sql)
+in the Supabase SQL Editor. This migration is safe to rerun. It adds a role to
+projects (existing projects default to `developer`), creates the
+work/organization experience table, and configures public read and admin-only
+write access. Use the dashboard's **Experience** section to manage entries;
+each entry and project can appear under Developer, Illustrator, or both roles.
+
+### 6. Enable Realtime (Comments)
 
 Go to **Table Editor → portfolio_comments → Enable Realtime**.
 
-### 6. Create Admin Account
+### 7. Create Admin Account
 
 **Step 1** — Go to **Authentication → Users → Add User** in Supabase Dashboard, then copy the generated User ID.
 
@@ -272,7 +282,7 @@ INSERT INTO public.profiles (id, username, role)
 VALUES ('USER_UUID', 'eki', 'admin');
 ```
 
-### 7. Run Locally
+### 8. Run Locally
 
 ```bash
 npm run dev
@@ -311,7 +321,7 @@ Upload the contents of the `dist/` folder to your hosting provider.
 
 ## Credits & Contact
 
-**Eki Zulfar Rachman**  
+**Muhana Fawwas Sausan**  
 Website: [eki.my.id](https://ekizr.com) · GitHub: [EkiZR](https://github.com/EkiZR)
 
 Thanks to [LottieFiles](https://lottiefiles.com/free-animation/coding-NWhbxMOVgP) and Claude.

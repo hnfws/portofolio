@@ -1,39 +1,38 @@
-import React, { useState, useEffect, useCallback, memo } from "react"
+import React, { useState, useEffect, memo } from "react"
 import { Helmet } from "react-helmet-async"
-import { Github, Linkedin, Mail, ExternalLink, Instagram, Sparkles } from "lucide-react"
+import { Github, Linkedin, Mail, ExternalLink, Instagram, Sparkles, Palette } from "lucide-react"
+import { PORTFOLIO_ROLES } from "../utils/portfolio"
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 
-const StatusBadge = memo(() => (
+const StatusBadge = memo(({ role }) => (
   <div className="inline-block animate-float lg:mx-0" data-aos="zoom-in" data-aos-delay="400">
     <div className="relative group">
       <div className="absolute -inset-0.5 bg-gradient-to-r from-[#6366f1] to-[#a855f7] rounded-full blur opacity-30 group-hover:opacity-50 transition duration-1000"></div>
       <div className="relative px-3 sm:px-4 py-2 rounded-full bg-black/40 backdrop-blur-xl border border-white/10">
         <span className="bg-gradient-to-r from-[#6366f1] to-[#a855f7] text-transparent bg-clip-text sm:text-sm text-[0.7rem] font-medium flex items-center">
           <Sparkles className="sm:w-4 sm:h-4 w-3 h-3 mr-2 text-blue-400" />
-          Ready to Innovate
+          {role === "illustrator" ? "Creating visual stories" : "Ready to Innovate"}
         </span>
       </div>
     </div>
   </div>
 ));
 
-const MainTitle = memo(() => (
+const MainTitle = memo(({ role }) => (
   <div className="space-y-2" data-aos="fade-up" data-aos-delay="600">
     <h1 className="text-5xl sm:text-6xl md:text-6xl lg:text-6xl xl:text-7xl font-bold tracking-tight">
-      <span className="relative inline-block">
+      {PORTFOLIO_ROLES[role].titleLines.map((line, index) => (
+        <React.Fragment key={line}>
+          {index > 0 && <br />}
+          <span className="relative inline-block">
         <span className="absolute -inset-2 bg-gradient-to-r from-[#6366f1] to-[#a855f7] blur-2xl opacity-20"></span>
-        <span className="relative bg-gradient-to-r from-white via-blue-100 to-purple-200 bg-clip-text text-transparent">
-          Frontend
-        </span>
-      </span>
-      <br />
-      <span className="relative inline-block mt-2">
-        <span className="absolute -inset-2 bg-gradient-to-r from-[#6366f1] to-[#a855f7] blur-2xl opacity-20"></span>
-        <span className="relative bg-gradient-to-r from-[#6366f1] to-[#a855f7] bg-clip-text text-transparent">
-          Developer
-        </span>
-      </span>
+            <span className={`relative bg-gradient-to-r ${index === 0 ? "from-white via-blue-100 to-purple-200" : "from-[#6366f1] to-[#a855f7]"} bg-clip-text text-transparent`}>
+              {line}
+            </span>
+          </span>
+        </React.Fragment>
+      ))}
     </h1>
   </div>
 ));
@@ -76,21 +75,24 @@ const SocialLink = memo(({ icon: Icon, link, label }) => (
 const TYPING_SPEED = 100;
 const ERASING_SPEED = 50;
 const PAUSE_DURATION = 2000;
-const WORDS = ["Network & Telecom Student", "Tech Enthusiast"];
-const TECH_STACK = ["React", "Javascript", "Node.js", "Tailwind"];
+const ROLE_WORDS = {
+  developer: ["Full-Stack Developer", "Digital Problem Solver"],
+  illustrator: ["Digital Illustrator", "Visual Storyteller"],
+};
 const SOCIAL_LINKS = [
-  { icon: Github, link: "https://github.com/EkiZR", label: "GitHub Profile" },
-  { icon: Linkedin, link: "https://www.linkedin.com/in/ekizr/", label: "LinkedIn Profile" },
-  { icon: Instagram, link: "https://www.instagram.com/ekizr_/?hl=id", label: "Instagram Profile" }
+  { icon: Github, link: "https://github.com/hnfws", label: "GitHub Profile" },
+  { icon: Linkedin, link: "https://www.linkedin.com/in/muhanafawwassausan/", label: "LinkedIn Profile" },
+  { icon: Instagram, link: "https://www.instagram.com/hn.fws/", label: "Instagram Profile" }
 ];
 
-const Home = () => {
+const Home = ({ role, onRoleChange }) => {
   const [text, setText] = useState("")
   const [isTyping, setIsTyping] = useState(true)
   const [wordIndex, setWordIndex] = useState(0)
   const [charIndex, setCharIndex] = useState(0)
   const [isLoaded, setIsLoaded] = useState(false)
   const [isHovering, setIsHovering] = useState(false)
+  const words = ROLE_WORDS[role]
 
   useEffect(() => {
     const initAOS = () => {
@@ -110,55 +112,67 @@ const Home = () => {
     return () => setIsLoaded(false);
   }, []);
 
-  const handleTyping = useCallback(() => {
+  useEffect(() => {
+    setText("");
+    setWordIndex(0);
+    setCharIndex(0);
+    setIsTyping(true);
+  }, [role]);
+
+  useEffect(() => {
+    let timeout;
+    const word = words[wordIndex];
+
     if (isTyping) {
-      if (charIndex < WORDS[wordIndex].length) {
-        setText(prev => prev + WORDS[wordIndex][charIndex]);
-        setCharIndex(prev => prev + 1);
+      if (charIndex < word.length) {
+        timeout = setTimeout(() => {
+          setText(word.slice(0, charIndex + 1));
+          setCharIndex(charIndex + 1);
+        }, TYPING_SPEED);
       } else {
-        setTimeout(() => setIsTyping(false), PAUSE_DURATION);
+        timeout = setTimeout(() => setIsTyping(false), PAUSE_DURATION);
       }
     } else {
       if (charIndex > 0) {
-        setText(prev => prev.slice(0, -1));
-        setCharIndex(prev => prev - 1);
+        timeout = setTimeout(() => {
+          setText(word.slice(0, charIndex - 1));
+          setCharIndex(charIndex - 1);
+        }, ERASING_SPEED);
       } else {
-        setWordIndex(prev => (prev + 1) % WORDS.length);
+        setWordIndex((previous) => (previous + 1) % words.length);
         setIsTyping(true);
       }
     }
-  }, [charIndex, isTyping, wordIndex]);
 
-  useEffect(() => {
-    const timeout = setTimeout(
-      handleTyping,
-      isTyping ? TYPING_SPEED : ERASING_SPEED
-    );
     return () => clearTimeout(timeout);
-  }, [handleTyping]);
+  }, [charIndex, isTyping, wordIndex, words]);
+
+  const roleDetails = PORTFOLIO_ROLES[role];
+  const RoleIcon = role === "illustrator" ? Palette : ExternalLink;
+  const title = `Muhana Fawwas Sausan — ${roleDetails.label}`;
 
   return (
     <>
       <Helmet>
-        <title>Eki Zulfar Rachman — Frontend Web Developer</title>
-        <meta name="description" content="Website resmi Eki Zulfar Rachman, Front-End Web Developer. Saya berfokus pada penciptaan pengalaman digital yang menarik dan selalu berupaya memberikan solusi terbaik dalam setiap proyek yang saya kerjakan." />
+        <title>{title}</title>
+        <meta name="description" content={`Portfolio Muhana Fawwas Sausan sebagai ${roleDetails.label}.`} />
      <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://ekizr.com" />
-        <meta property="og:title" content="Eki Zulfar Rachman — Frontend Web Developer" />
-     <meta property="og:description" content="Website resmi dan portofolio Eki Zulfar Rachman, Front-End Web Developer." />
+        <meta property="og:title" content={title} />
+        <meta property="og:description" content={`Website portfolio Muhana Fawwas Sausan sebagai ${roleDetails.label}.`} />
         <meta property="og:url" content="https://ekizr.com" />
         <meta property="og:type" content="website" />
         <script type="application/ld+json">{`
           {
             "@context": "https://schema.org",
             "@type": "Person",
-            "name": "Eki Zulfar Rachman",
-            "jobTitle": "Frontend Developer",
+            "name": "Muhana Fawwas Sausan",
+            "jobTitle": "${roleDetails.label}",
             "url": "https://ekizr.com",
             "sameAs": [
-              "https://github.com/EkiZR",
-              "https://www.linkedin.com/in/ekizr/",
-              "https://www.instagram.com/ekizr_/"
+              "https://github.com/hnfws",
+              "https://www.linkedin.com/in/muhanafawwassausan/",
+              "https://www.instagram.com/hn.fws/"
             ]
           }
         `}</script>
@@ -173,8 +187,29 @@ const Home = () => {
                 data-aos="fade-right"
                 data-aos-delay="200">
                 <div className="space-y-4 sm:space-y-6">
-                  <StatusBadge />
-                  <MainTitle />
+                  <div
+                    className="inline-flex rounded-xl border border-white/10 bg-white/5 p-1"
+                    role="group"
+                    aria-label="Choose portfolio role"
+                  >
+                    {Object.entries(PORTFOLIO_ROLES).map(([roleKey, details]) => (
+                      <button
+                        key={roleKey}
+                        type="button"
+                        aria-pressed={role === roleKey}
+                        onClick={() => onRoleChange(roleKey)}
+                        className={`rounded-lg px-3 py-2 text-xs font-medium transition-colors sm:px-4 sm:text-sm ${
+                          role === roleKey
+                            ? "bg-indigo-500/20 text-white"
+                            : "text-slate-400 hover:text-white"
+                        }`}
+                      >
+                        {details.shortLabel}
+                      </button>
+                    ))}
+                  </div>
+                  <StatusBadge role={role} />
+                  <MainTitle role={role} />
 
                   {/* Typing Effect */}
                   <div className="h-8 flex items-center" data-aos="fade-up" data-aos-delay="800">
@@ -188,19 +223,21 @@ const Home = () => {
                   <p className="text-base md:text-lg text-gray-400 max-w-xl leading-relaxed font-light"
                     data-aos="fade-up"
                     data-aos-delay="1000">
-                    Menciptakan Website Yang Inovatif, Fungsional, dan User-Friendly untuk Solusi Digital.
+                    {role === "illustrator"
+                      ? "Mengubah ide menjadi ilustrasi dan cerita visual yang berkarakter."
+                      : "Menciptakan website yang inovatif, fungsional, dan user-friendly untuk solusi digital."}
                   </p>
 
                   {/* Tech Stack */}
                   <div className="flex flex-wrap gap-3 justify-start" data-aos="fade-up" data-aos-delay="1200">
-                    {TECH_STACK.map((tech, index) => (
+                    {roleDetails.stack.map((tech, index) => (
                       <TechStack key={index} tech={tech} />
                     ))}
                   </div>
 
                   {/* CTA Buttons */}
                   <div className="flex flex-row gap-3 w-full justify-start" data-aos="fade-up" data-aos-delay="1400">
-                    <CTAButton href="#Portofolio" text="Projects" icon={ExternalLink} />
+                    <CTAButton href="#Portofolio" text={role === "illustrator" ? "Artwork" : "Projects"} icon={RoleIcon} />
                     <CTAButton href="#Contact" text="Contact" icon={Mail} />
                   </div>
 
@@ -213,7 +250,7 @@ const Home = () => {
                 </div>
               </div>
 
-              {/* Right Column - WebM Video */}
+              {/* Right Column */}
               <div className="w-full py-0 md:py-[10%] sm:py-0 lg:w-1/2 h-[260px] sm:h-[400px] lg:h-[600px] xl:h-[750px] relative flex items-center justify-center order-2 lg:order-2  mt-5 sm:mt-0"
                 onMouseEnter={() => setIsHovering(true)}
                 onMouseLeave={() => setIsHovering(false)}
@@ -225,6 +262,29 @@ const Home = () => {
                   }`}>
                   </div>
 
+                  {role === "illustrator" ? (
+                    <div className="relative lg:left-12 z-10 mx-auto flex aspect-[4/3] w-[88%] max-w-[500px] items-center justify-center overflow-hidden rounded-[2rem] border border-white/10 bg-gradient-to-br from-[#23143b] via-[#111027] to-[#090817] shadow-[0_30px_100px_rgba(99,102,241,0.18)]">
+                      <svg aria-hidden="true" viewBox="0 0 500 380" className="absolute inset-0 h-full w-full">
+                        <defs>
+                          <linearGradient id="illustration-bg" x1="0" x2="1" y1="0" y2="1">
+                            <stop offset="0%" stopColor="#f472b6" />
+                            <stop offset="100%" stopColor="#818cf8" />
+                          </linearGradient>
+                        </defs>
+                        <circle cx="250" cy="184" r="118" fill="url(#illustration-bg)" opacity=".18" />
+                        <path d="M92 300c28-81 85-120 158-120s130 39 158 120" fill="#17152d" stroke="#c4b5fd" strokeOpacity=".5" strokeWidth="2" />
+                        <path d="M176 170c0-57 32-96 77-96s77 39 77 96v41H176z" fill="#f3a5a5" />
+                        <path d="M168 171c3-66 37-111 89-111 47 0 75 37 78 89-20-4-38-16-53-33-19 27-59 46-114 55" fill="#23143b" />
+                        <path d="M218 179h2m59 0h2" stroke="#312445" strokeLinecap="round" strokeWidth="8" />
+                        <path d="M233 206c11 9 23 9 34 0" fill="none" stroke="#9f466c" strokeLinecap="round" strokeWidth="4" />
+                        <path d="M124 103l12-20m227 67 22-4M108 216l19 8m218-145 5-18" stroke="#f9a8d4" strokeLinecap="round" strokeWidth="5" />
+                      </svg>
+                      <div className="absolute bottom-5 left-5 right-5 rounded-2xl border border-white/10 bg-black/30 px-4 py-3 backdrop-blur-md">
+                        <p className="text-xs uppercase tracking-[0.2em] text-fuchsia-200">Illustration portfolio</p>
+                        <p className="mt-1 text-sm text-white">Ideas, characters & visual stories</p>
+                      </div>
+                    </div>
+                  ) : (
                   <div className={`relative lg:left-12 z-10 w-full opacity-90 transform transition-transform duration-500 ${
                     isHovering ? "scale-105" : "scale-100"
                   }`}>
@@ -238,6 +298,7 @@ const Home = () => {
                       }`}
                     />
                   </div>
+                  )}
 
                   <div className={`absolute inset-0 pointer-events-none transition-all duration-700 ${
                     isHovering ? "opacity-50" : "opacity-20"

@@ -11,6 +11,7 @@ import {
   Github,
   Pencil,
 } from "lucide-react";
+import { PORTFOLIO_ROLES } from "../../utils/portfolio";
 
 const Card = ({ children, className = "" }) => (
   <div className={`relative group ${className}`}>
@@ -189,6 +190,7 @@ const ProjectForm = ({
   onCancel,
   submitLabel = "Save Project",
   uploading,
+  error,
 }) => {
   const [form, setForm] = useState({
     Title: initial?.Title || "",
@@ -201,6 +203,7 @@ const ProjectForm = ({
       : initial?.Features || "",
     Link: initial?.Link || "",
     Github: initial?.Github || "",
+    role: initial?.role || "developer",
   });
   const [file, setFile] = useState(null);
   const [preview, setPreview] = useState(initial?.Img || null);
@@ -270,6 +273,22 @@ const ProjectForm = ({
           onChange={set("Github")}
           placeholder="https://github.com/username/repo"
         />
+        <div className="space-y-1.5">
+          <label className="text-xs font-medium uppercase tracking-wider text-indigo-300/70">
+            Portfolio role
+          </label>
+          <select
+            value={form.role}
+            onChange={set("role")}
+            className="w-full rounded-xl border border-white/10 bg-[#0d0d22] px-4 py-2.5 text-sm text-gray-200 outline-none transition-all focus:border-indigo-500/60 focus:ring-1 focus:ring-indigo-500/20"
+          >
+            <option value="developer">{PORTFOLIO_ROLES.developer.label}</option>
+            <option value="illustrator">
+              {PORTFOLIO_ROLES.illustrator.label}
+            </option>
+            <option value="both">Show in both portfolios</option>
+          </select>
+        </div>
 
         <div className="sm:col-span-2 space-y-1.5">
           <label className="text-xs text-indigo-300/70 uppercase tracking-wider font-medium">
@@ -305,6 +324,15 @@ const ProjectForm = ({
         </div>
       </div>
 
+      {error && (
+        <p
+          className="rounded-xl border border-red-400/20 bg-red-400/5 p-3 text-sm text-red-200"
+          role="alert"
+        >
+          {error}
+        </p>
+      )}
+
       <div className="flex justify-end gap-2 pt-1">
         <button
           type="button"
@@ -337,13 +365,16 @@ export default function Projects() {
   const [showCreate, setShowCreate] = useState(false);
   const [editProject, setEditProject] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [actionError, setActionError] = useState("");
 
   const fetchProjects = async () => {
     setLoading(true);
-    const { data } = await supabase
+    const { data, error } = await supabase
       .from("projects")
       .select("*")
       .order("created_at", { ascending: false });
+    if (error) setActionError(`Could not load projects: ${error.message}`);
+    else setActionError("");
     setProjects(data || []);
     setLoading(false);
   };
@@ -354,7 +385,10 @@ export default function Projects() {
 
   const uploadImage = async (f) => {
     const fileName = `${Date.now()}-${f.name}`;
-    await supabase.storage.from("project-images").upload(fileName, f);
+    const { error } = await supabase.storage
+      .from("project-images")
+      .upload(fileName, f);
+    if (error) throw error;
     const { data } = supabase.storage
       .from("project-images")
       .getPublicUrl(fileName);
@@ -363,33 +397,11 @@ export default function Projects() {
 
   const handleCreate = async (form, file) => {
     setUploading(true);
-    let imgUrl = "";
-    if (file) imgUrl = await uploadImage(file);
-    await supabase.from("projects").insert({
-      Title: form.Title,
-      Description: form.Description,
-      Img: imgUrl,
-      TechStack: form.TechStack.split(",")
-        .map((s) => s.trim())
-        .filter(Boolean),
-      Features: form.Features.split(",")
-        .map((s) => s.trim())
-        .filter(Boolean),
-      Link: form.Link,
-      Github: form.Github,
-    });
-    setShowCreate(false);
-    setUploading(false);
-    fetchProjects();
-  };
-
-  const handleEdit = async (form, file) => {
-    setUploading(true);
-    let imgUrl = editProject.Img || "";
-    if (file) imgUrl = await uploadImage(file);
-    await supabase
-      .from("projects")
-      .update({
+    setActionError("");
+    try {
+      let imgUrl = "";
+      if (file) imgUrl = await uploadImage(file);
+      const { error } = await supabase.from("projects").insert({
         Title: form.Title,
         Description: form.Description,
         Img: imgUrl,
@@ -401,16 +413,58 @@ export default function Projects() {
           .filter(Boolean),
         Link: form.Link,
         Github: form.Github,
-      })
-      .eq("id", editProject.id);
-    setEditProject(null);
-    setUploading(false);
-    fetchProjects();
+        role: form.role,
+      });
+      if (error) throw error;
+      setShowCreate(false);
+      await fetchProjects();
+    } catch (error) {
+      setActionError(`Could not save project: ${error.message}`);
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleEdit = async (form, file) => {
+    setUploading(true);
+    setActionError("");
+    try {
+      let imgUrl = editProject.Img || "";
+      if (file) imgUrl = await uploadImage(file);
+      const { error } = await supabase
+        .from("projects")
+        .update({
+          Title: form.Title,
+          Description: form.Description,
+          Img: imgUrl,
+          TechStack: form.TechStack.split(",")
+            .map((s) => s.trim())
+            .filter(Boolean),
+          Features: form.Features.split(",")
+            .map((s) => s.trim())
+            .filter(Boolean),
+          Link: form.Link,
+          Github: form.Github,
+          role: form.role,
+        })
+        .eq("id", editProject.id);
+      if (error) throw error;
+      setEditProject(null);
+      await fetchProjects();
+    } catch (error) {
+      setActionError(`Could not update project: ${error.message}`);
+    } finally {
+      setUploading(false);
+    }
   };
 
   const deleteProject = async (id) => {
     if (!confirm("Delete this project?")) return;
-    await supabase.from("projects").delete().eq("id", id);
+    const { error } = await supabase.from("projects").delete().eq("id", id);
+    if (error) {
+      setActionError(`Could not delete project: ${error.message}`);
+      return;
+    }
     fetchProjects();
   };
 
@@ -435,8 +489,20 @@ export default function Projects() {
           </div>
         </div>
 
+        {actionError && (
+          <p
+            className="rounded-xl border border-red-400/20 bg-red-400/5 p-3 text-sm text-red-200"
+            role="alert"
+          >
+            {actionError}
+          </p>
+        )}
+
         <button
-          onClick={() => setShowCreate(true)}
+          onClick={() => {
+            setActionError("");
+            setShowCreate(true);
+          }}
           className="relative group shrink-0"
         >
           <div className="absolute -inset-0.5 bg-gradient-to-r from-[#4f52c9] to-[#8644c5] rounded-xl opacity-50 blur group-hover:opacity-80 transition duration-300" />
@@ -455,6 +521,7 @@ export default function Projects() {
             onCancel={() => setShowCreate(false)}
             submitLabel="Save Project"
             uploading={uploading}
+            error={actionError}
           />
         </Modal>
       )}
@@ -468,6 +535,7 @@ export default function Projects() {
             onCancel={() => setEditProject(null)}
             submitLabel="Update Project"
             uploading={uploading}
+            error={actionError}
           />
         </Modal>
       )}

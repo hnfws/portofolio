@@ -44,7 +44,8 @@ const AnimatedBackground = () => {
 	}, [])
 
 	return (
-		<div className="fixed inset-0 ">
+		<div className="ambient-background fixed inset-0 overflow-hidden" aria-hidden="true">
+			<div className="ambient-backdrop absolute inset-0"></div>
 			<div className="absolute inset-0">
 				<div
 					ref={(ref) => (blobRefs.current[0] = ref)}
@@ -59,10 +60,10 @@ const AnimatedBackground = () => {
 					ref={(ref) => (blobRefs.current[3] = ref)}
 					className="absolute -bottom-10 right-20 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-[128px] opacity-20 md:opacity-10 hidden sm:block"></div>
 			</div>
-			<div className="absolute inset-0 bg-[linear-gradient(to_right,#4f4f4f10_1px,transparent_1px),linear-gradient(to_bottom,#4f4f4f10_1px,transparent_1px)] bg-[size:24px_24px]"></div>
+			<div className="ambient-grid absolute inset-0"></div>
+			<div className="ambient-grain absolute inset-0"></div>
 		</div>
 	)
 }
 
 export default AnimatedBackground
-
