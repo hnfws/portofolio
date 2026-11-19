@@ -4,7 +4,7 @@ export const PORTFOLIO_ROLES = {
     shortLabel: "Developer",
     titleLines: ["Software", "Developer"],
     words: ["Software Developer", "Application Developer"],
-    stack: ["React", "JavaScript", "Node.js", "Supabase"],
+    stack: ["React", "JavaScript", "Laravel", "Supabase"],
   },
   illustrator: {
     label: "Illustrator",
