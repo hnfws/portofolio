@@ -156,7 +156,7 @@ const ProjectDetails = () => {
     );
   }
 
-  const projectUrl = `https://hnfws.com/project/${toSlug(project.Title)}`;
+  const projectUrl = `https://portofolio-muhana.netlify.app/project/${toSlug(project.Title)}`;
 
   return (
     <>
@@ -193,7 +193,7 @@ const ProjectDetails = () => {
             "author": {
               "@type": "Person",
               "name": "Muhana Fawwas Sausan",
-              "url": "https://hnfws.com"
+              "url": "https://portofolio-muhana.netlify.app"
             }
           }
         `}</script>

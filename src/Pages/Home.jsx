@@ -157,10 +157,10 @@ const Home = ({ role, onRoleChange }) => {
         <title>{title}</title>
         <meta name="description" content={`Portfolio Muhana Fawwas Sausan sebagai ${roleDetails.label}.`} />
      <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://hnfws.com" />
+        <link rel="canonical" href="https://portofolio-muhana.netlify.app" />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={`Website portfolio Muhana Fawwas Sausan sebagai ${roleDetails.label}.`} />
-        <meta property="og:url" content="https://hnfws.com" />
+        <meta property="og:url" content="https://portofolio-muhana.netlify.app" />
         <meta property="og:type" content="website" />
         <script type="application/ld+json">{`
           {
@@ -168,7 +168,7 @@ const Home = ({ role, onRoleChange }) => {
             "@type": "Person",
             "name": "Muhana Fawwas Sausan",
             "jobTitle": "${roleDetails.label}",
-            "url": "https://hnfws.com",
+            "url": "https://portofolio-muhana.netlify.app",
             "sameAs": [
               "https://github.com/hnfws",
               "https://www.linkedin.com/in/muhanafawwassausan/",
