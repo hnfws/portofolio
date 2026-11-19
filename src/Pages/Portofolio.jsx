@@ -120,6 +120,17 @@ const techStacks = [
   { icon: "firebase.svg", language: "Firebase" },
   { icon: "MUI.svg", language: "Material UI" },
   { icon: "vercel.svg", language: "Vercel" },
+  { icon: "laravel.svg", language: "Laravel" },
+  { icon: "python.svg", language: "Python" },
+  { icon: "java.svg", language: "Java" },
+  { icon: "kotlin.svg", language: "Kotlin" },
+  { icon: "docker.svg", language: "Docker" },
+    { icon: "mysql.svg", language: "MySQL" },
+
+  { icon: "php.svg", language: "PHP" },
+  { icon: "codeigniter.svg", language: "CodeIgniter" },
+    { icon: "mysql.svg", language: "MySQL" },
+
   { icon: "SweetAlert.svg", language: "SweetAlert2" },
 ];
 
