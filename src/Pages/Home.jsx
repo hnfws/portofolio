@@ -76,7 +76,7 @@ const TYPING_SPEED = 100;
 const ERASING_SPEED = 50;
 const PAUSE_DURATION = 2000;
 const ROLE_WORDS = {
-  developer: ["Full-Stack Developer", "Digital Problem Solver"],
+  developer: ["Software Developer", "Digital Problem Solver"],
   illustrator: ["Digital Illustrator", "Visual Storyteller"],
 };
 const SOCIAL_LINKS = [
@@ -157,10 +157,10 @@ const Home = ({ role, onRoleChange }) => {
         <title>{title}</title>
         <meta name="description" content={`Portfolio Muhana Fawwas Sausan sebagai ${roleDetails.label}.`} />
      <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://ekizr.com" />
+        <link rel="canonical" href="https://hnfws.com" />
         <meta property="og:title" content={title} />
         <meta property="og:description" content={`Website portfolio Muhana Fawwas Sausan sebagai ${roleDetails.label}.`} />
-        <meta property="og:url" content="https://ekizr.com" />
+        <meta property="og:url" content="https://hnfws.com" />
         <meta property="og:type" content="website" />
         <script type="application/ld+json">{`
           {
@@ -168,7 +168,7 @@ const Home = ({ role, onRoleChange }) => {
             "@type": "Person",
             "name": "Muhana Fawwas Sausan",
             "jobTitle": "${roleDetails.label}",
-            "url": "https://ekizr.com",
+            "url": "https://hnfws.com",
             "sameAs": [
               "https://github.com/hnfws",
               "https://www.linkedin.com/in/muhanafawwassausan/",
@@ -225,7 +225,7 @@ const Home = ({ role, onRoleChange }) => {
                     data-aos-delay="1000">
                     {role === "illustrator"
                       ? "Mengubah ide menjadi ilustrasi dan cerita visual yang berkarakter."
-                      : "Menciptakan website yang inovatif, fungsional, dan user-friendly untuk solusi digital."}
+                      : "Mengembangkan website dan aplikasi yang inovatif, fungsional, dan mudah digunakan."}
                   </p>
 
                   {/* Tech Stack */}

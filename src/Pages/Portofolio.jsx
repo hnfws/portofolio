@@ -16,7 +16,11 @@ import AOS from "aos";
 import "aos/dist/aos.css";
 import Certificate from "../components/Certificate";
 import { Code, Award, Boxes, Palette } from "lucide-react";
-import { PORTFOLIO_ROLES, projectMatchesRole } from "../utils/portfolio";
+import {
+  PORTFOLIO_ROLES,
+  certificateMatchesRole,
+  projectMatchesRole,
+} from "../utils/portfolio";
 
 
 const ToggleButton = ({ onClick, isShowingMore }) => (
@@ -196,20 +200,26 @@ export default function FullWidthTabs({ role = "developer" }) {
   const roleProjects = projects.filter((project) =>
     projectMatchesRole(project.role, role),
   );
+  const roleCertificates = certificates.filter((certificate) =>
+    certificateMatchesRole(certificate.role, role),
+  );
   const displayedRoleProjects = showAllProjects
     ? roleProjects
     : roleProjects.slice(0, initialItems);
-  const displayedCertificates = showAllCertificates ? certificates : certificates.slice(0, initialItems);
+  const displayedCertificates = showAllCertificates
+    ? roleCertificates
+    : roleCertificates.slice(0, initialItems);
   const portfolioRole = PORTFOLIO_ROLES[role];
 
   useEffect(() => {
     setValue(0);
     setShowAllProjects(false);
+    setShowAllCertificates(false);
   }, [role]);
 
   // Sisa dari komponen (return statement) tidak ada perubahan
   return (
-    <div className="md:px-[10%] px-[5%] w-full sm:mt-0 mt-[3rem] bg-[#030014] overflow-hidden" id="Portofolio">
+    <div className="mt-20 w-full overflow-hidden bg-[#030014] px-[5%] md:mt-24 md:px-[10%]" id="Portofolio">
       {/* Header section - unchanged */}
       <div className="text-center pb-10" data-aos="fade-up" data-aos-duration="1000">
         <h2 className="inline-block text-3xl md:text-5xl font-bold text-center mx-auto text-transparent bg-clip-text bg-gradient-to-r from-[#6366f1] to-[#a855f7]">
@@ -370,12 +380,17 @@ export default function FullWidthTabs({ role = "developer" }) {
                     data-aos={index % 3 === 0 ? "fade-up-right" : index % 3 === 1 ? "fade-up" : "fade-up-left"}
                     data-aos-duration={index % 3 === 0 ? "1000" : index % 3 === 1 ? "1200" : "1000"}
                   >
-                    <Certificate ImgSertif={certificate.Img} />
+                    <Certificate certificate={certificate} />
                   </div>
                 ))}
               </div>
             </div>
-            {certificates.length > initialItems && (
+            {roleCertificates.length === 0 && (
+              <p className="py-10 text-center text-sm text-slate-400">
+                No certificates have been added to this portfolio yet.
+              </p>
+            )}
+            {roleCertificates.length > initialItems && (
               <div className="mt-6 w-full flex justify-start">
                 <ToggleButton
                   onClick={() => toggleShowMore('certificates')}

@@ -1,9 +1,9 @@
 export const PORTFOLIO_ROLES = {
   developer: {
-    label: "Full-Stack Developer",
+    label: "Software Developer",
     shortLabel: "Developer",
-    titleLines: ["Full-Stack", "Developer"],
-    words: ["Web Developer", "Problem Solver"],
+    titleLines: ["Software", "Developer"],
+    words: ["Software Developer", "Application Developer"],
     stack: ["React", "JavaScript", "Node.js", "Supabase"],
   },
   illustrator: {
@@ -19,3 +19,8 @@ export const projectMatchesRole = (projectRole, activeRole) =>
   projectRole === "both" ||
   projectRole === activeRole ||
   (!projectRole && activeRole === "developer");
+
+export const certificateMatchesRole = (certificateRole, activeRole) =>
+  !certificateRole ||
+  certificateRole === "both" ||
+  certificateRole === activeRole;

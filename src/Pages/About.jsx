@@ -1,6 +1,9 @@
 import React, { useEffect, useState, memo, useMemo } from "react"
 import { FileText, Code, Award, Globe, ArrowUpRight, Sparkles, UserCheck, Palette } from "lucide-react"
-import { projectMatchesRole } from "../utils/portfolio"
+import {
+  certificateMatchesRole,
+  projectMatchesRole,
+} from "../utils/portfolio"
 import AOS from 'aos'
 import 'aos/dist/aos.css'
 
@@ -137,7 +140,9 @@ const AboutPage = ({ role }) => {
         totalProjects: storedProjects.filter((project) =>
           projectMatchesRole(project.role, role),
         ).length,
-        totalCertificates: storedCertificates.length,
+        totalCertificates: storedCertificates.filter((certificate) =>
+          certificateMatchesRole(certificate.role, role),
+        ).length,
         YearExperience: experience
       });
     };
@@ -249,7 +254,7 @@ const AboutPage = ({ role }) => {
             >
         {role === "illustrator"
           ? "Saya mengeksplorasi ide melalui ilustrasi digital dan cerita visual, dengan perhatian pada karakter, suasana, dan detail."
-          : "Saya adalah mahasiswa Teknik Informatika yang berfokus pada pengembangan Full-Stack. Saya senang menciptakan pengalaman digital yang menarik dan solusi yang fungsional."}
+          : "Saya adalah mahasiswa Teknik Informatika yang berfokus sebagai Software Developer. Saya senang mengembangkan website dan aplikasi yang menarik, fungsional, serta bermanfaat."}
                   </p>
 
                {/* Quote Section */}

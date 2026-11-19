@@ -102,7 +102,7 @@ function ExperienceForm({ initial, saving, onCancel, onSubmit }) {
             className={FIELD_CLASS}
             value={form.position}
             onChange={update("position")}
-            placeholder="e.g. Full-Stack Developer"
+            placeholder="e.g. Software Developer"
             required
           />
         </Field>

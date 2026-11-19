@@ -137,7 +137,7 @@ const ProjectDetails = () => {
         ...selectedProject,
         Features: selectedProject.Features || [],
         TechStack: selectedProject.TechStack || [],
-        Github: selectedProject.Github || "https://github.com/EkiZR",
+        Github: selectedProject.Github || "https://github.com/hnfws",
       };
       setProject(enhancedProject);
     }
@@ -156,7 +156,7 @@ const ProjectDetails = () => {
     );
   }
 
-  const projectUrl = `https://ekizr.com/project/${toSlug(project.Title)}`;
+  const projectUrl = `https://hnfws.com/project/${toSlug(project.Title)}`;
 
   return (
     <>
@@ -167,7 +167,7 @@ const ProjectDetails = () => {
           content={
             project.Description
               ? project.Description.slice(0, 155)
-              : `Project ${project.Title} oleh Muhana Fawwas Sausan — Frontend Web Developer.`
+              : `Project ${project.Title} oleh Muhana Fawwas Sausan — Software Developer.`
           }
         />
         <meta name="robots" content="index, follow" />
@@ -193,7 +193,7 @@ const ProjectDetails = () => {
             "author": {
               "@type": "Person",
               "name": "Muhana Fawwas Sausan",
-              "url": "https://ekizr.com"
+              "url": "https://hnfws.com"
             }
           }
         `}</script>
